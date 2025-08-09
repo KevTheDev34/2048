@@ -2,13 +2,34 @@
     margin:0;
     padding: 0;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+title {
+    color: #ffffff;
+}
+
+#screen-title {
+    text-align: center;
+    top: 100px;
+    font: 50px 'Courier New', Courier, monospace;
 }
 
 #canvas1 {
-    position: absolute;
+    margin: 50px;
     top: 0;
     left: 0;
-    background: blue;
+    background: #baad9c;
     max-width: 75%;
     max-height: 75%;
+}
+
+#score {
+    top: 10px;
+    right: 20px;
+    font: 24px 'Courier New', Courier, monospace;
+    text-align: center;
 }
