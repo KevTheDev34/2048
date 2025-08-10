@@ -12,6 +12,10 @@ title {
     color: #ffffff;
 }
 
+body {
+  font-family: 'Clear Sans', sans-serif;
+}
+
 #screen-title {
     text-align: center;
     top: 100px;

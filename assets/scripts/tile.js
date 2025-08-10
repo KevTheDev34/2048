@@ -1,8 +1,10 @@
 
 class Tile {
-    constructor(value) {
+    constructor(x, y, value) {
         this.value = value;
         this.color = Tile.getColor(value);
+        this.x = x; // x position in the grid
+        this.y = y; // y position in the grid
     }
 
     static getColor(value) {
