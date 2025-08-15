@@ -26,6 +26,7 @@ class Board {
         }
     }
 
+    // Create a tile object for each tile in the matrix and draw it on the canvas
     drawBoard() {
         this.ctx.clearRect(0, 0, this.width, this.height);
         for (let i = 0; i < 4; i++) {
@@ -60,6 +61,58 @@ class Board {
     setTile(row, col, value) {
         this.tiles[row][col] = new Tile(row, col, value); // create a new Tile instance with the value
     }
+
+    getTile(row, col) {
+        return this.tiles[row][col]; // return the Tile instance at the specified position
+    }
+
+    slideDown() {
+        for (let col = 0; col < 4; col++) {
+            let emptyRow = 3; // Start from the bottom of the column
+            for (let row = 3; row >= 0; row--) {
+                const tile = this.getTile(row, col);
+                if (tile.value !== 0) {
+                    if (emptyRow !== row) {
+                        this.setTile(emptyRow, col, tile.value); // Move tile down
+                        this.setTile(row, col, 0); // Clear the original position
+                    }
+                    emptyRow--; // Move the empty row up
+                }
+            }
+        }
+    }
+
+    rotateClockwise(matrix) {
+        this.tiles = matrix[0].map((val, index) => matrix.map(row => row[index]).reverse());
+    }
+    
+    rotateCCW(matrix) {
+        this.tiles = matrix[0].map((val, index) => matrix.map(row => row[row.length-1-index]));    
+    }
+
+    tilt(direction) {
+        if (direction === "up") {
+            this.rotateClockwise(this.tiles);
+            this.rotateClockwise(this.tiles);
+            this.slideDown();
+            this.rotateCCW(this.tiles);
+            this.rotateCCW(this.tiles);
+            this.drawBoard();
+        } else if (direction === "down") {
+            this.slideDown();
+            this.drawBoard();
+        } else if (direction === "left") {
+            this.rotateCCW(this.tiles);
+            this.slideDown();
+            this.rotateClockwise(this.tiles);  
+            this.drawBoard();
+        } else if (direction === "right") {
+            this.rotateClockwise(this.tiles);
+            this.slideDown();
+            this.rotateCCW(this.tiles);
+            this.drawBoard();
+        }
+    }
 }
 
 window.addEventListener('load', function(){
@@ -70,4 +123,18 @@ window.addEventListener('load', function(){
 
     const board = new Board(canvas, ctx);
     console.log(board.tiles)
+
+    window.addEventListener('keydown', (event) => {
+        if (event.key === "ArrowDown") {
+            board.tilt("down"); // Implement tilt logic here
+        } else if (event.key === "ArrowUp") {
+            board.tilt("up"); // Implement tilt logic here
+        } else if (event.key === "ArrowLeft") {
+            // Implement left slide logic here
+            board.tilt("left"); // Implement tilt logic here
+        } else if (event.key === "ArrowRight") {
+            // Implement right slide logic here
+            board.tilt("right"); // Implement tilt logic here
+        }
+    });
 });
