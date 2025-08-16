@@ -83,6 +83,28 @@ class Board {
                 }
             }
         }
+
+        // Merge tiles after sliding
+        for (let i = 3; i >= 0; i--) {
+            for (let j = 0; j < 4; j++) {
+                this.merge(i, j); // Merge tiles in the specified direction
+            }
+        }
+
+        // Slide down again after merging to fill any gaps
+        for (let col = 0; col < 4; col++) {
+            let emptyRow = 3; // Start from the bottom of the column
+            for (let row = 3; row >= 0; row--) {
+                const tile = this.getTile(row, col);
+                if (tile.value !== 0) {
+                    if (emptyRow !== row) {
+                        this.setTile(emptyRow, col, tile.value); // Move tile down
+                        this.setTile(row, col, 0); // Clear the original position
+                    }
+                    emptyRow--; // Move the empty row up
+                }
+            }
+        }
     }
 
     rotateClockwise(matrix) {
@@ -115,46 +137,15 @@ class Board {
             this.rotateCCW(this.tiles);
             this.drawBoard();
         }
-
-        // Merge tiles after sliding
-        for (let i = 0; i < 4; i++) {
-            for (let j = 0; j < 4; j++) {
-                this.merge(direction, i, j); // Merge tiles in the specified direction
-            }
-        }
     }
 
-    merge(direction, x, y) {
-        if (direction === "down") {
-            if (y < 3 && this.tiles[y][x].value === this.tiles[y + 1][x].value) {
-                const curr_tile = this.tiles[y][x];
-                const next_tile = this.tiles[y + 1][x];
-                this.setTile(y + 1, x, curr_tile.value * 2); // Merge tiles
-                this.setTile(y, x, 0); // Clear the original tile
-            }
-        } else if (direction === "up") {
-            if (y > 0 && this.tiles[y][x].value === this.tiles[y - 1][x].value) {
-                const curr_tile = this.tiles[y][x];
-                const next_tile = this.tiles[y - 1][x];
-                this.setTile(y - 1, x, curr_tile.value * 2); // Merge tiles
-                this.setTile(y, x, 0); // Clear the original tile
-            }
-        } else if (direction === "left") {
-            if (x > 0 && this.tiles[y][x].value === this.tiles[y][x - 1].value) {
-                const curr_tile = this.tiles[y][x];
-                const next_tile = this.tiles[y][x - 1];
-                this.setTile(y, x - 1, curr_tile.value * 2); // Merge tiles
-                this.setTile(y, x, 0); // Clear the original tile
-            }
-        } else if (direction === "right") {
-            if (x < 3 && this.tiles[y][x].value === this.tiles[y][x + 1].value) {
-                const curr_tile = this.tiles[y][x];
-                const next_tile = this.tiles[y][x + 1];
-                this.setTile(y, x + 1, curr_tile.value * 2); // Merge tiles
-                this.setTile(y, x, 0); // Clear the original tile
-            }
+    merge(x, y) {
+        if (x > 0 && this.tiles[x][y].value === this.tiles[x-1][y].value) {
+            const curr_tile = this.tiles[x][y];
+            const top_tile = this.tiles[x-1][y];
+            this.setTile(x, y, top_tile.value * 2); // Merge tiles
+            this.setTile(x-1, y, 0); // Clear the original tile
         }
-        this.drawBoard(); // Redraw the board after merging
     }
 }
 
