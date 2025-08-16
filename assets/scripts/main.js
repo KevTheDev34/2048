@@ -22,7 +22,6 @@ class Board {
 
         while (this.tiles.flat().filter(tile => tile.value === 2).length < 2) {
             this.setRandomTile();
-            // console.log(`Random tile set to 2, current board:`, this.tiles.map(row => row.map(tile => tile.value)));
         }
     }
 
@@ -55,7 +54,11 @@ class Board {
         const row = Math.floor(Math.random() * 4);
         const col = Math.floor(Math.random() * 4);
         // console.log(`Setting tile at (${row}, ${col}) to 2`);
-        this.setTile(row, col, 2); // set the tile to 2
+        if (this.tiles[row][col].value === 0) {
+            this.setTile(row, col, 2); // set the tile to 2 
+        } else {
+            this.setRandomTile(); // if the tile is not empty, try again
+        }
     }
 
     setTile(row, col, value) {
@@ -112,6 +115,46 @@ class Board {
             this.rotateCCW(this.tiles);
             this.drawBoard();
         }
+
+        // Merge tiles after sliding
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+                this.merge(direction, i, j); // Merge tiles in the specified direction
+            }
+        }
+    }
+
+    merge(direction, x, y) {
+        if (direction === "down") {
+            if (y < 3 && this.tiles[y][x].value === this.tiles[y + 1][x].value) {
+                const curr_tile = this.tiles[y][x];
+                const next_tile = this.tiles[y + 1][x];
+                this.setTile(y + 1, x, curr_tile.value * 2); // Merge tiles
+                this.setTile(y, x, 0); // Clear the original tile
+            }
+        } else if (direction === "up") {
+            if (y > 0 && this.tiles[y][x].value === this.tiles[y - 1][x].value) {
+                const curr_tile = this.tiles[y][x];
+                const next_tile = this.tiles[y - 1][x];
+                this.setTile(y - 1, x, curr_tile.value * 2); // Merge tiles
+                this.setTile(y, x, 0); // Clear the original tile
+            }
+        } else if (direction === "left") {
+            if (x > 0 && this.tiles[y][x].value === this.tiles[y][x - 1].value) {
+                const curr_tile = this.tiles[y][x];
+                const next_tile = this.tiles[y][x - 1];
+                this.setTile(y, x - 1, curr_tile.value * 2); // Merge tiles
+                this.setTile(y, x, 0); // Clear the original tile
+            }
+        } else if (direction === "right") {
+            if (x < 3 && this.tiles[y][x].value === this.tiles[y][x + 1].value) {
+                const curr_tile = this.tiles[y][x];
+                const next_tile = this.tiles[y][x + 1];
+                this.setTile(y, x + 1, curr_tile.value * 2); // Merge tiles
+                this.setTile(y, x, 0); // Clear the original tile
+            }
+        }
+        this.drawBoard(); // Redraw the board after merging
     }
 }
 
@@ -136,5 +179,7 @@ window.addEventListener('load', function(){
             // Implement right slide logic here
             board.tilt("right"); // Implement tilt logic here
         }
+        board.setRandomTile();
     });
+
 });
