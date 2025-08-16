@@ -1,4 +1,5 @@
-import Tile from './tile.js';
+const Tile = require('./tile.js');
+
 class Board {
     constructor(canvas, context) {
         this.canvas = canvas;
@@ -83,6 +84,14 @@ class Board {
                 }
             }
         }
+
+
+        // Merge tiles after sliding
+        for (let i = 3; i >= 0; i--) {
+            for (let j = 0; j < 4; j++) {
+                this.merge(i, j); // Merge tiles in the specified direction
+            }
+        }
     }
 
     rotateClockwise(matrix) {
@@ -115,71 +124,42 @@ class Board {
             this.rotateCCW(this.tiles);
             this.drawBoard();
         }
-
-        // Merge tiles after sliding
-        for (let i = 0; i < 4; i++) {
-            for (let j = 0; j < 4; j++) {
-                this.merge(direction, i, j); // Merge tiles in the specified direction
-            }
-        }
     }
 
-    merge(direction, x, y) {
-        if (direction === "down") {
-            if (y < 3 && this.tiles[y][x].value === this.tiles[y + 1][x].value) {
-                const curr_tile = this.tiles[y][x];
-                const next_tile = this.tiles[y + 1][x];
-                this.setTile(y + 1, x, curr_tile.value * 2); // Merge tiles
-                this.setTile(y, x, 0); // Clear the original tile
-            }
-        } else if (direction === "up") {
-            if (y > 0 && this.tiles[y][x].value === this.tiles[y - 1][x].value) {
-                const curr_tile = this.tiles[y][x];
-                const next_tile = this.tiles[y - 1][x];
-                this.setTile(y - 1, x, curr_tile.value * 2); // Merge tiles
-                this.setTile(y, x, 0); // Clear the original tile
-            }
-        } else if (direction === "left") {
-            if (x > 0 && this.tiles[y][x].value === this.tiles[y][x - 1].value) {
-                const curr_tile = this.tiles[y][x];
-                const next_tile = this.tiles[y][x - 1];
-                this.setTile(y, x - 1, curr_tile.value * 2); // Merge tiles
-                this.setTile(y, x, 0); // Clear the original tile
-            }
-        } else if (direction === "right") {
-            if (x < 3 && this.tiles[y][x].value === this.tiles[y][x + 1].value) {
-                const curr_tile = this.tiles[y][x];
-                const next_tile = this.tiles[y][x + 1];
-                this.setTile(y, x + 1, curr_tile.value * 2); // Merge tiles
-                this.setTile(y, x, 0); // Clear the original tile
-            }
+    merge(x, y) {
+        if (y < 3 && this.tiles[y][x].value === this.tiles[y + 1][x].value) {
+            const curr_tile = this.tiles[y][x];
+            const next_tile = this.tiles[y + 1][x];
+            this.setTile(y + 1, x, next_tile.value * 2); // Merge tiles
+            this.setTile(y, x, 0); // Clear the original tile
         }
-        this.drawBoard(); // Redraw the board after merging
     }
 }
 
-window.addEventListener('load', function(){
-    const canvas = this.document.getElementById('canvas1');
-    const ctx = canvas.getContext('2d');
-    canvas.width = 500;
-    canvas.height = 500;
+// window.addEventListener('load', function(){
+//     const canvas = this.document.getElementById('canvas1');
+//     const ctx = canvas.getContext('2d');
+//     canvas.width = 500;
+//     canvas.height = 500;
 
-    const board = new Board(canvas, ctx);
-    console.log(board.tiles)
+//     const board = new Board(canvas, ctx);
+//     console.log(board.tiles)
 
-    window.addEventListener('keydown', (event) => {
-        if (event.key === "ArrowDown") {
-            board.tilt("down"); // Implement tilt logic here
-        } else if (event.key === "ArrowUp") {
-            board.tilt("up"); // Implement tilt logic here
-        } else if (event.key === "ArrowLeft") {
-            // Implement left slide logic here
-            board.tilt("left"); // Implement tilt logic here
-        } else if (event.key === "ArrowRight") {
-            // Implement right slide logic here
-            board.tilt("right"); // Implement tilt logic here
-        }
-        board.setRandomTile();
-    });
+//     window.addEventListener('keydown', (event) => {
+//         if (event.key === "ArrowDown") {
+//             board.tilt("down"); // Implement tilt logic here
+//         } else if (event.key === "ArrowUp") {
+//             board.tilt("up"); // Implement tilt logic here
+//         } else if (event.key === "ArrowLeft") {
+//             // Implement left slide logic here
+//             board.tilt("left"); // Implement tilt logic here
+//         } else if (event.key === "ArrowRight") {
+//             // Implement right slide logic here
+//             board.tilt("right"); // Implement tilt logic here
+//         }
+//         board.setRandomTile();
+//     });
 
-});
+// });
+
+module.exports = Board;
