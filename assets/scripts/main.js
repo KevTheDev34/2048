@@ -10,6 +10,9 @@ class Board {
         this.tileSize = (this.width - (this.tileSpacing * 5)) / 4; // calculate tile size based on canvas width and spacing
         this.initBoard();
         this.drawBoard();
+        this.score = 0; // Initialize score
+        this.bestScore = 0; // Initialize best score
+        this.gameOver = false; // Initialize game over state
     }
 
     initBoard() {
@@ -143,6 +146,10 @@ class Board {
         if (x > 0 && this.tiles[x][y].value === this.tiles[x-1][y].value) {
             const curr_tile = this.tiles[x][y];
             const top_tile = this.tiles[x-1][y];
+            this.score += curr_tile.value * 2; // Update score
+            if (this.score > this.bestScore) {
+                this.bestScore = this.score; // Update best score if current score exceeds it
+            }
             this.setTile(x, y, top_tile.value * 2); // Merge tiles
             this.setTile(x-1, y, 0); // Clear the original tile
         }
@@ -152,6 +159,8 @@ class Board {
 window.addEventListener('load', function(){
     const canvas = this.document.getElementById('canvas1');
     const ctx = canvas.getContext('2d');
+    const score = this.document.getElementById('score-value');
+    const gameOver = this.document.getElementById('gameover');
     canvas.width = 500;
     canvas.height = 500;
 
@@ -171,6 +180,21 @@ window.addEventListener('load', function(){
             board.tilt("right"); // Implement tilt logic here
         }
         board.setRandomTile();
+        board.drawBoard(); // Redraw the board after each move
+        score.textContent = board.score; // Update score display
+        if (board.tiles.flat().every(tile => tile.value !== 0)) {
+            // Check for game over condition
+            var canMerge = board.tiles.some((row, i) => row.some((tile, j) => {
+                return (i < 3 && tile.value === board.tiles[i + 1][j].value) || // Down merge
+                       (j < 3 && tile.value === board.tiles[i][j + 1].value); // Right merge
+            }));
+            if (!canMerge) {
+                gameOver.textContent = "Game Over!";
+                gameOver.style.display = "block"; // Show game over message
+                // alert("Game Over! Your score: " + board.score);
+                // board.gameOver = true; // Set game over state
+            }
+        }
     });
 
 });
